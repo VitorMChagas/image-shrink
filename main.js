@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu } = require('electron')
+const { app, BrowserWindow, Menu, ipcMain } = require('electron')
 
 // Set env
 process.env.NODE_ENV = 'development'
@@ -7,16 +7,25 @@ const isDev = process.env.NODE_ENV != 'production' ? true : false
 const isMac = process.platform === 'darwin' ? true : false
 
 let mainWindow
+let aboutWindow
 
 function createMainWindow () {
     const mainWindow = new BrowserWindow({
         title: 'ImageShrink',
-        width: 500,
+        width: isDev ? 800 : 500,
         height: 600,
         icon:  `${__dirname}/assets/icons/Icon_256x256.png`,
         resizable: isDev,
         backgroundColor: 'white',
+        webPreferences: {
+            nodeIntegration: true,
+            contextIsolation: false
+        },
     })
+
+    if (isDev) {
+        mainWindow.webContents.openDevTools()
+    }
 
     mainWindow.loadURL(`file://${__dirname}/app/index.html`)
     // mainWindow.loadFile('./app/index.html')
@@ -31,7 +40,7 @@ function createAboutWindow () {
         resizable: false,
         backgroundColor: 'white',
     })
-
+    aboutWindow.removeMenu();
     aboutWindow.loadURL(`file://${__dirname}/app/about.html`)
     // mainWindow.loadFile('./app/index.html')
 }
@@ -61,7 +70,7 @@ const menu = [
     {
         role: 'fileMenu',
     },
-    
+
     ...(!isMac ? [
         {
             label: 'Help',
@@ -88,6 +97,10 @@ const menu = [
         ]
     : []),
 ];
+
+ipcMain.on('image:minimize', (e) =>{
+    console.log(e)
+})
 
 app.on('window-all-closed', () => {
     if (!isMac) {
