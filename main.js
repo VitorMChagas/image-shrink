@@ -5,9 +5,8 @@ const { app, BrowserWindow, Menu, ipcMain, shell } = require('electron')
 
 const imagemin = require('imagemin')
 const imageminMozjpeg = require('imagemin-mozjpeg')
-const imageminPngQuant = reqeuire('imagemin-pngquant')
+const imageminPngQuant = require('imagemin-pngquant')
 const slash = require('slash')
-const { shell } = require('electron/common')
 
 // Set env
 process.env.NODE_ENV = 'development'
@@ -61,7 +60,7 @@ app.on('ready', () => {
    
     Menu.setApplicationMenu(mainMenu)
 
-    mainWindow.on('closed', () => mainWindow = null)
+    mainWindow.on('ready', () => (mainWindow = null))
 })
 
 const menu = [
